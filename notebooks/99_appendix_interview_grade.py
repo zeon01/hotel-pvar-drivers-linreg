@@ -139,12 +139,14 @@ sample = df.sample(n=30000, random_state=42)
 qrows = []
 for q in (0.5, 0.75, 0.9):
     qreg = smf.quantreg(formula=FORMULA, data=sample).fit(q=q, max_iter=2000)
-    qrows.append({
-        "quantile": q,
-        "channel_b_coef": float(qreg.params.get("C(channel)[T.ChannelManagerB]", np.nan)),
-        "channel_a_coef": float(qreg.params.get("C(channel)[T.ChannelManagerA]", np.nan)),
-        "long_tail_coef": float(qreg.params.get("C(property_tier)[T.Long-tail]", np.nan)),
-    })
+    qrows.append(
+        {
+            "quantile": q,
+            "channel_b_coef": float(qreg.params.get("C(channel)[T.ChannelManagerB]", np.nan)),
+            "channel_a_coef": float(qreg.params.get("C(channel)[T.ChannelManagerA]", np.nan)),
+            "long_tail_coef": float(qreg.params.get("C(property_tier)[T.Long-tail]", np.nan)),
+        }
+    )
 qtable = pd.DataFrame(qrows)
 qtable
 
@@ -161,7 +163,9 @@ qtable
 from pvar_linreg.diagnostics import cooks_distance
 
 cooks = cooks_distance(ols_hc3)
-print(f"Cook's d: max={cooks.max():.4f}, p99={np.percentile(cooks, 99):.4f}, p99.9={np.percentile(cooks, 99.9):.4f}")
+print(
+    f"Cook's d: max={cooks.max():.4f}, p99={np.percentile(cooks, 99):.4f}, p99.9={np.percentile(cooks, 99.9):.4f}"
+)
 
 # Refit dropping top-1%
 threshold = np.percentile(cooks, 99)
@@ -186,12 +190,14 @@ wh = white_test(ols_hc3)
 jb = jarque_bera_test(ols_hc3)
 dw = durbin_watson_stat(ols_hc3)
 
-pd.Series({
-    "BP_lm_p": bp["lm_p"],
-    "White_lm_p": wh["lm_p"],
-    "JB_p": jb["jb_p"],
-    "DW": dw,
-}).round(4)
+pd.Series(
+    {
+        "BP_lm_p": bp["lm_p"],
+        "White_lm_p": wh["lm_p"],
+        "JB_p": jb["jb_p"],
+        "DW": dw,
+    }
+).round(4)
 
 # %%
 display.Image(filename=str(FIGURES_DIR / "03_residuals_vs_fitted.png"))
@@ -217,14 +223,14 @@ print(f"Box-Cox lambda = {lam:.4f}  (≈ 0 confirms log is the right transform)"
 
 # %%
 specs = [
-    ("base",                    FORMULA),
-    ("- holiday",               FORMULA.replace(" + is_holiday", "")),
-    ("- weekend",               FORMULA.replace(" + is_weekend", "")),
-    ("- log_lead_time",         FORMULA.replace("log_lead_time + ", "")),
-    ("- cyclical month",        FORMULA.replace(" + month_sin + month_cos", "")),
-    ("- log_expected_rate",     FORMULA.replace(" + log_expected_rate", "")),
-    ("- star_rating",           FORMULA.replace(" + star_rating_centered", "")),
-    ("- country",               FORMULA.replace(" + C(country)", "")),
+    ("base", FORMULA),
+    ("- holiday", FORMULA.replace(" + is_holiday", "")),
+    ("- weekend", FORMULA.replace(" + is_weekend", "")),
+    ("- log_lead_time", FORMULA.replace("log_lead_time + ", "")),
+    ("- cyclical month", FORMULA.replace(" + month_sin + month_cos", "")),
+    ("- log_expected_rate", FORMULA.replace(" + log_expected_rate", "")),
+    ("- star_rating", FORMULA.replace(" + star_rating_centered", "")),
+    ("- country", FORMULA.replace(" + C(country)", "")),
     ("- tier:channel interaction", FORMULA.replace(" + C(property_tier):C(channel)", "")),
 ]
 spec_rows = []
@@ -232,15 +238,26 @@ for label, f in specs:
     fit = smf.ols(formula=f, data=sample).fit(cov_type="HC3")  # sample for speed
     p = fit.params.get("C(channel)[T.ChannelManagerB]", np.nan)
     se = fit.bse.get("C(channel)[T.ChannelManagerB]", np.nan)
-    spec_rows.append({"spec": label, "coef": float(p), "ci_lo": float(p - 1.96 * se), "ci_hi": float(p + 1.96 * se)})
+    spec_rows.append(
+        {
+            "spec": label,
+            "coef": float(p),
+            "ci_lo": float(p - 1.96 * se),
+            "ci_hi": float(p + 1.96 * se),
+        }
+    )
 specs_df = pd.DataFrame(spec_rows)
 specs_df
 
 # %%
 fig, ax = plt.subplots(figsize=(9, 5))
-ax.errorbar(specs_df["coef"], range(len(specs_df)),
-            xerr=[specs_df["coef"] - specs_df["ci_lo"], specs_df["ci_hi"] - specs_df["coef"]],
-            fmt="o", capsize=3)
+ax.errorbar(
+    specs_df["coef"],
+    range(len(specs_df)),
+    xerr=[specs_df["coef"] - specs_df["ci_lo"], specs_df["ci_hi"] - specs_df["coef"]],
+    fmt="o",
+    capsize=3,
+)
 ax.set_yticks(range(len(specs_df)))
 ax.set_yticklabels(specs_df["spec"])
 ax.set_xlabel("ChannelManagerB coefficient")
