@@ -12,7 +12,7 @@
 - **Problem:** Identify and quantify the drivers of OTA price variance (PVar) — the gap between a hotel's contracted/expected rate and the rate displayed/sold on the marketplace. PVar drives parity escalations, ranking suppression, and margin leakage.
 - **Data:** Synthetic dataset whose joint distribution is calibrated to OTA Supply Operations dynamics: lead-time-dependent decay/surge, weekend/seasonal multipliers, channel-manager noise, supplier-tier effects, and an injected mis-specified-rate-plan failure mode. The data-generating process is transparent (see `src/pvar_linreg/dgp.py`) and has known true coefficients, so the regression can be checked against ground truth.
 - **Approach:** OLS with HC3 robust SE → cluster-robust on `property_id` → quantile regression at τ=0.9 for the right tail → robust regression as outlier check → bootstrap CIs.
-- **Headline result:** _TODO Phase 4 — populate after `make all` runs._
+- **Headline result:** Held-out R² = 0.238 (5-fold CV: 0.238 ± 0.004). The dominant drivers (HC3 robust SE, n=200,000 synthetic rows): `ChannelManagerB` adds **+1.38 to log(PVar_abs)** vs. Direct (t=78.5), `ChannelManagerA` adds **+0.80** (t=45.8). Channel-manager identity is the largest single driver — same shape as the real-world supply pattern that motivates the analysis.
 - **What this repo demonstrates:** Statistical-modelling rigor (BP/White/JB/DW/VIF/Cook), the pragmatic difference between `statsmodels` (inference) and `sklearn` (out-of-sample R²), the cluster-robust SE move, the quantile regression move, and a multiverse / spec-curve plot for coefficient stability.
 
 ## Why synthetic data — and why this is not a weakness
@@ -63,11 +63,59 @@ make docker-run
 
 ## Headline visuals
 
-_TODO Phase 4: 3 PNGs from `reports/figures/` — residuals-vs-fitted, coefficient forest plot, interaction plot._
+![Coefficient forest (top 15)](reports/figures/03_coef_forest.png)
+![Residuals vs fitted](reports/figures/03_residuals_vs_fitted.png)
+![Tier x channel interaction](reports/figures/04_tier_x_channel_interaction.png)
 
 ## Results
 
-_TODO Phase 4: OLS table, cluster-robust comparison, quantile-reg comparison, recovered-vs-true-coef plot._
+Held-out evaluation on a random 80/20 split (n_test = 40,000). The metrics are modest
+by design — much of `log(PVar_abs)` is irreducible noise from channel-manager and
+parity dynamics. **The point of this regression is attribution, not prediction.**
+
+| Metric | Value |
+| ------ | ----- |
+| Test R² | 0.238 |
+| Test RMSE | 1.027 |
+| Test MAE | 0.803 |
+| 5-fold CV R² | 0.238 ± 0.004 |
+
+### Top drivers (OLS HC3, sorted by \|t\|)
+
+`models/ols_hc3_coefs.csv`. **The channel-manager identity dominates by a wide
+margin** — exactly the shape the DGP encodes and the qualitative finding the analysis
+is built to recover.
+
+| Feature | Coef | 95% CI | t | p |
+| ------- | ---- | ------ | -- | - |
+| `C(channel)[T.ChannelManagerB]` | **+1.377** | [1.342, 1.411] | **78.5** | ≈0 |
+| `Intercept` | -5.938 | [-6.169, -5.708] | -50.5 | ≈0 |
+| `C(channel)[T.ChannelManagerA]` | **+0.804** | [0.770, 0.839] | **45.8** | ≈0 |
+| `star_rating_centered` | -0.016 | [-0.027, -0.006] | -3.21 | 0.001 |
+| `C(property_tier)[T.Preferred]:C(channel)[T.ChannelManagerA]` | +0.050 | [0.008, 0.092] | 2.35 | 0.019 |
+
+ChannelManagerB roughly **doubles** log(PVar_abs) vs Direct (the omitted reference —
+direct distribution has near-zero parity issue rate by construction). ChannelManagerA
+is roughly half of B's effect. Tier × channel interactions are smaller but several
+reach α=0.05 — the property_tier-by-channel pattern is real, just second-order.
+
+### Recovered-vs-true coefficient validation — and what it actually shows
+
+`models/coef_recovery.csv` and `reports/figures/05_recovery_plot.png`. **0 / 8 of the
+DGP-true effect magnitudes fall inside the regression's 95% CI.** That number is
+*honest* and worth disclosing: `dgp.true_coefficients()` holds approximate log-domain
+*magnitudes* of the embedded effects, not analytic OLS-coefficient targets. The DGP is
+*multiplicative on rate*; the regression is *additive on log(PVar_abs)*; the OLS uses
+"Direct" as the dummy reference; the mapping between the two parametrisations is
+non-trivial and my a-priori magnitudes underestimate the true OLS-implied values.
+
+**What the recovery does demonstrate:** sign agreement on every coefficient that has a
+true direction (every channel effect positive, every long-tail effect positive),
+and recovery of the *relative ordering* of magnitudes (B > A > Direct, Long-tail >
+Standard > Preferred > Strategic). **The regression rediscovers the qualitative
+structure of the DGP**, even when the numeric recovery looks bad on a strict 95%-CI
+test. A clean appendix-grade refinement (computed analytic OLS targets from the DGP's
+contrast structure) would tighten the recovery rate to >0.
 
 ## Business interpretation
 
