@@ -67,7 +67,7 @@ set_style()
 # %% [markdown]
 # ## J. A/B-test design follow-up
 # Long-tail Channel B → Channel A migration. Compute MDE for a 50bps PVar reduction
-# at α=0.05, power=0.8.
+# at alpha=0.05, power=0.8.
 
 # %% [markdown]
 # ## K. Production monitoring proposal

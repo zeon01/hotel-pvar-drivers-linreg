@@ -8,9 +8,9 @@ import pytest
 
 def test_compute_vif_signature() -> None:
     pytest.importorskip("pvar_linreg.diagnostics")
-    from pvar_linreg.diagnostics import compute_vif
-
     import pandas as pd
+
+    from pvar_linreg.diagnostics import compute_vif
 
     X = pd.DataFrame({"a": [1.0, 2.0, 3.0, 4.0], "b": [1.5, 2.5, 3.5, 4.5]})
     try:

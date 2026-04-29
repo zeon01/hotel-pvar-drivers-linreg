@@ -43,7 +43,7 @@ set_style()
 
 # %% [markdown]
 # ## 4. Interaction plot
-# `property_tier × channel` with 95% CI bars — the substantively interesting one.
+# `property_tier x channel` with 95% CI bars - the substantively interesting one.
 
 # %% [markdown]
 # ## 5. Held-out R² via 80/20 split + 5-fold CV

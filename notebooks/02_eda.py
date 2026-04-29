@@ -30,7 +30,7 @@ set_style()
 
 # %% [markdown]
 # ## 2. Group-wise PVar means
-# By tier × channel — preview of the interaction effect.
+# By tier x channel - preview of the interaction effect.
 
 # %% [markdown]
 # ## 3. Heteroskedasticity preview

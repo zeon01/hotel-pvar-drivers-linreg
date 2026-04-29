@@ -5,7 +5,7 @@ Usage::
     uv run python scripts/generate_data.py --rows 200000 --seed 42
 
 Default sample size is 200k rows (configurable). Full DGP yields ~5.5M rows over 5,000
-properties × 365 days × 3 channels.
+properties x 365 days x 3 channels.
 """
 
 from __future__ import annotations

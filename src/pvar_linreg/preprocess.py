@@ -6,7 +6,9 @@ from __future__ import annotations
 import pandas as pd
 
 
-def drop_iqr_outliers(df: pd.DataFrame, target_col: str = "PVar_abs", k: float = 3.0) -> pd.DataFrame:
+def drop_iqr_outliers(
+    df: pd.DataFrame, target_col: str = "PVar_abs", k: float = 3.0
+) -> pd.DataFrame:
     """Drop rows where ``target_col`` falls outside ``[Q1 - k*IQR, Q3 + k*IQR]``.
 
     The injected ~1% decimal-point errors should be removed here. A robust regression
@@ -15,7 +17,9 @@ def drop_iqr_outliers(df: pd.DataFrame, target_col: str = "PVar_abs", k: float =
     raise NotImplementedError("Phase 4")
 
 
-def log_transform_target(df: pd.DataFrame, target_col: str = "PVar_abs", eps: float = 1e-4) -> pd.DataFrame:
+def log_transform_target(
+    df: pd.DataFrame, target_col: str = "PVar_abs", eps: float = 1e-4
+) -> pd.DataFrame:
     """Add ``log_target`` column. Non-negative, right-skewed → log is the natural choice.
 
     The Box-Cox lambda is shown in the appendix for completeness; expected ≈ 0 → log.

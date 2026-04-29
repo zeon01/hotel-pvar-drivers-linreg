@@ -6,7 +6,6 @@ import pandas as pd
 
 from pvar_linreg.config import SEED
 
-
 FORMULA: str = (
     "log_pvar_abs ~ log_lead_time + is_weekend + is_holiday "
     "+ month_sin + month_cos "
