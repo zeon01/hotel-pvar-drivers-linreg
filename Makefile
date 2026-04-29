@@ -21,6 +21,7 @@ setup:
 
 data:
 	uv run python scripts/generate_data.py --rows 200000
+	uv run python -c "from pvar_linreg.data import load; from pvar_linreg.preprocess import prepare; prepare(load())"
 
 features:
 	uv run python -c "from pvar_linreg.features import build_feature_frame; build_feature_frame()"

@@ -24,7 +24,16 @@ def set_style() -> None:
 
 def annotate_finding(ax, text: str) -> None:
     """Add a one-sentence subtitle under the axes title that states the *finding*."""
-    raise NotImplementedError("Phase 4")
+    ax.text(
+        0.0,
+        1.02,
+        text,
+        ha="left",
+        va="bottom",
+        transform=ax.transAxes,
+        fontsize=plt.rcParams["axes.titlesize"] * 0.7,
+        color="#555",
+    )
 
 
 __all__ = ["annotate_finding", "set_style"]
