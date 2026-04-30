@@ -14,9 +14,9 @@
 # ---
 
 # %% [markdown]
-# # 99 - Interview-grade Rigor Appendix (PVar OLS)
+# # 99 - Extended Methodology Appendix (PVar OLS)
 #
-# Each section is a senior-DS-panel question, answered with a defensible methodology
+# Each section is a senior-DS-level question, answered with a defensible methodology
 # and a named alternative.
 
 # %%

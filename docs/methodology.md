@@ -1,7 +1,7 @@
 # Methodology — hotel-pvar-drivers-linreg
 
 This document walks through every modelling decision, names the rejected alternative,
-and is written so each section can be paraphrased verbatim in an interview.
+and is written so each section can be paraphrased in a technical review.
 
 ## 1. Why synthetic data
 

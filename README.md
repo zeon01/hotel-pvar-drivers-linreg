@@ -142,9 +142,9 @@ These findings are documented in detail in `notebooks/03_modeling.ipynb` and the
 4. Add **rolling re-estimation** quarterly to catch parameter drift.
 5. **Productionise the spec-curve / multiverse analysis** as a standing report — the coefficient on the channel-manager term across 16 reasonable specifications is a more defensible deliverable than a single estimate.
 
-## Appendix: interview-grade rigor
+## Appendix: extended methodology
 
-`notebooks/99_appendix_interview_grade.ipynb` covers:
+`notebooks/99_appendix_extended_rigor.ipynb` covers:
 
 - Recovered vs. true coefficients table — the unfakeable methodological-soundness check.
 - HC0 / HC1 / HC2 / HC3 side-by-side (showing the difference is small at this N and discussing when it matters).
@@ -168,7 +168,7 @@ hotel-pvar-drivers-linreg/
 │   ├── 02_eda.ipynb
 │   ├── 03_modeling.ipynb
 │   ├── 04_robustness.ipynb
-│   └── 99_appendix_interview_grade.ipynb
+│   └── 99_appendix_extended_rigor.ipynb
 ├── src/pvar_linreg/
 │   ├── config.py
 │   ├── dgp.py            # the data-generating process
